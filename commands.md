@@ -23,6 +23,11 @@ binwalk
 - Hiding files in files
 ## C
 ```sh
+cat
+```
+- Print file contents
+- Without arguments, it uses stdin. Can be used to have stdin as input after piping payload to executable like this: `(echo "payload"; cat;) | ./runme`
+```sh
 checksec
 ```
 - Check the properties of a binary file
@@ -100,6 +105,11 @@ hexedit
 ```
 - Edit hex version of file
 - Tab to edit ascii
+## I
+```sh
+id
+```
+- View current UID and GID, and other related ID's or groups
 ## K
 ```sh
 kill
