@@ -10,7 +10,7 @@ Make a user perform actions that they do not intend to perform. Such as, changin
 
 View all my Proof of Concepts [here](#proof-of-concepts)
 
-## Protections
+## Protections & Vulnerabilities
 
 ### CSRF tokens
 CSRF tokens are generated server side and shared with the client. Before every sensitive action, it checks if the token is correct.
