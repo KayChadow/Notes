@@ -19,6 +19,7 @@ Port 53 for DNS
     - ... more
 
 3. Find all **subdomains**, even the ones that aren't active. And scan all the ports. Use a brote forcer tool for this.
+    - [trickest.io](https://trickest.io/)
     - Use amass and subfinder
     - Use wordlists with bruteforcer tool on domains found with ASN
     - Scrape web pages
