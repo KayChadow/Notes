@@ -48,7 +48,7 @@ By setting pipelining to true, the speed becomes 1785 requests/second:
 ```
 
 ## Race conditions | Parallel requests
-For race conditions where you have to send multiple packets at the same time, while you can brute force through some (word)list while sending them. It can probably only hold like ~20~30 requests at the same time, so any more will probably not work. 
+For race conditions where you have to send multiple packets at the same time, while you can brute force through some (word)list while sending them. It can probably only hold like 20~30 requests at the same time, so any more will probably not work. 
 
 ```python
 def queueRequests(target, wordlists):
