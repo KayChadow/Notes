@@ -51,6 +51,7 @@ echo -e -n
 exiftool
 ```
 - Get file info and metadata
+- Create polyglot (php/jpg) files with `exiftool -Comment="<?php payload; ?>" image.jpg -o polyglot.php`
 ```sh
 expand -i -t 4 file1 > file1
 ```
