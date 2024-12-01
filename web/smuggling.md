@@ -27,6 +27,7 @@ If there is some reflected xss vulnerability, you can combine it with request sm
 You can use HTTP request smuggling to do web cache poisening or web cache deception. This is so cool like fr. Set up a payload in a way that the front-end server sees it as a static cachable file, and the back-end sees it as a malicious or sensitive file. Now the back-end will send the malicious/sensitive file to the front-end, this server caches the response. So the attacker succesfully poisened/decepted the cache. It might be tedious to have the victim send the right request at the right time to the right front-end server. But when you have a proof of concept, it is easy for an attacker to automate this process using scripting.
 
 ## Proof of Concepts
+Proof of concepts can differ very much depending on the target server, and the goal of the hack. It requires some creativity and understanding of how things work to forge a nice payload.
 
 ### CL.TE | Test
 This HTTP request will cause time delay, if vulnerability is present
