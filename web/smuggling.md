@@ -1,5 +1,8 @@
 # HTTP Request Smuggling
 
+## Response Queue Poisening
+When you smuggle an extra full request, it can cause the server's response queue to get poisened. This is exploitable if the connection between the front-end and back-end is used for more than a few requests, and the attack does not cause the connection to shut down. When the queue is poisened, every request will recieve the response from the previous request. This allows an attacker to recieve perhaps sensitive responses from other users that allow for full account takeover. Also it makes the website kinda unusable for other users since they get weird responses not corresponing to their request.
+
 ## Harmless -> Exploitable
 ### On-Site Redirect -> Open Redirect
 Many applications perform on-site redirects from one URL to another and place the hostname from the request's Host header into the redirect URL. An example of this is the default behavior of Apache and IIS web servers, where a request for a folder without a trailing slash receives a redirect to the same folder including the trailing slash. This behavior is normally considered harmless, but it can be exploited in a request smuggling attack to redirect other users to an external domain. Example [PoC](#h2cl--on-site-redirect)
@@ -86,11 +89,32 @@ email=
 # HTTP/2
 Some amazing research on HTTP/2 vulnerabilities [here](https://portswigger.net/research/http2) by James Kettle, definitely recommended to read (~35 minutes). 
 
+Sometimes the server supports HTTP/2, but does not declare this to the client (due to misconfiguration). The client will simply use HTTP/1.1 as a fallback option. You can discover whole new attack surface if you send all kinds of HTTP/2 requests, and see if it is supported.
+
+
 ## HTTP/2 Downgrading Vulnerabilities
 Most of the HTTP/2 vulnerabilities happen because of HTTP/2 downgrading to HTTP/1.1 to the back-end. The front-end server converts the received request to a valid HTTP/1.1 request for the back-end. This is widely used, but can cause vulnerabilities if not correctly implemented with the right precautions.
 
+### Prohibited Injection Sequences | Pseudo-Headers
+These are prohibited by the HTTP/2 protocol, meaning that the request should be terminated if encountered (not always, sometimes should just sanitize). But sometimes this check is not (well) implemented.
+```
+foo: bar\r\nTransfer-Encoding: chunked\r\nX:	ignore
+```
+Sending a `Host` header will sometimes result in two host headers in the back-end, since in HTTP/2 you got the `:authority` pseudo-header which effectively replaces the normal host header.
+
+Sending two `:path` pseudo-headers might cause inconsistencies concerning which path is used for access control, and which for routing. This might allow you to access off limit endpoints.
+
+If spaces are allowed in the `:method` pseudo-header, you can inject something like this "GET /admin HTTP/1.1". If the back-end ignores trailing character on this first line, this creates an ambiguous path.
+
+If the server dynamically generates a URL using the `:scheme` pseudo-header, you can try injecting it with "https://attacker.com/?" to reroute to a malicious website.
+
+Make sure that the resulting request for the back-end is still valid. It must contain `<method> + space + <path> + space + HTTP/1.1` before the first `\r\n`. Add the correct values accordingly.
+
 ### H2.CL
 When the front-end blindly uses the received `Content-Length` header in the converted HTTP/1.1 request. Because this header is not used in HTTP/2. Look at this example [PoC](#h2cl--on-site-redirect) using an on-site redirect as an open redirect.
+
+### H2.TE
+Normally a front-end server that supports HTTP/2 should terminate any request that contains the `Transfer-Encoding` header. But when this is not properly done, it allows for an attack to exploit request smuggling.
 
 
 ## Proof of Concepts
