@@ -1,7 +1,7 @@
 # HTTP Request Smuggling
 
 ## Response Queue Poisening
-When you smuggle an extra full request, it can cause the server's response queue to get poisened. This is exploitable if the connection between the front-end and back-end is used for more than a few requests, and the attack does not cause the connection to shut down. When the queue is poisened, every request will recieve the response from the previous request. This allows an attacker to recieve perhaps sensitive responses from other users that allow for full account takeover. Also it makes the website kinda unusable for other users since they get weird responses not corresponing to their request.
+When you smuggle an extra full request, it can cause the server's response queue to get poisened. This is exploitable if the connection between the front-end and back-end is used for more than a few requests, and the attack does not cause the connection to shut down. When the queue is poisened, every request will receive the response from the previous request. This allows an attacker to receive perhaps sensitive responses from other users that allow for full account takeover. Also it makes the website kinda unusable for other users since they get weird responses not corresponing to their request.
 
 ## Harmless -> Exploitable
 ### On-Site Redirect -> Open Redirect
@@ -100,6 +100,9 @@ These are prohibited by the HTTP/2 protocol, meaning that the request should be 
 ```
 foo: bar\r\nTransfer-Encoding: chunked\r\nX:	ignore
 ```
+You can use `\r\n` sequences to split a pseudo-header (like the line above), or to split a whole request. Make sure tho, when doing this, that both requests contain all needed headers. Account for request rewriting done by the server. So if the front-end adds a Host header at the end of all header, you must make sure that you add an extra Host header before splitting the request with `\r\n\r\n`.
+
+### Inconsistencies | Pseudo-Headers
 Sending a `Host` header will sometimes result in two host headers in the back-end, since in HTTP/2 you got the `:authority` pseudo-header which effectively replaces the normal host header.
 
 Sending two `:path` pseudo-headers might cause inconsistencies concerning which path is used for access control, and which for routing. This might allow you to access off limit endpoints.
@@ -132,3 +135,15 @@ Content-Length: 10
 
 x=x
 ```
+
+## Request Tunneling
+When the connection between the front- and back-end is not reused for multiple requests, you cannot really do request smuggling. So for when you cannot interfere with other users requests, there is request tunneling! In HTTP/2 every "stream" should only contain a single request and response. If you receive a response with another response in the body, you have succesfully tunneled a request.
+
+Use [sequences like this](#prohibited-injection-sequences--pseudo-headers) to break out of HTTP/2 header names or values. To leak the internal headers, inject a `Content-Length: 99\r\n\r\nfoo=` where foo reflects in the response. 
+
+Some front-end servers will read all data received from the back-end, and so forward also the tunneled response within the body of the main response to the client. Other servers only read the content-length amount, so you don't get any visible response, thus it is **blind request tunneling**. Luckily, sometimes front-end servers try to read content-length amount of bytes even when the request method was `HEAD` (the response contains a content-length header with the size of the response as if it was a normal request). When the server has this misconfiguration, you can simply get the tunneled response (as plain body) by using `HEAD` in the main request.
+- If the tunneled response is shorter than the main response, just tunnel another request after it to "pad"
+- If the tunneled response is longer than the main response, create a main request that reflects input. This way you can make the response arbitrarily long
+
+Take a look at this proof of concept
+![Proof of concept](../images/Unblind_request_tunneling.png)
