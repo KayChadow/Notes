@@ -102,6 +102,8 @@ foo: bar\r\nTransfer-Encoding: chunked\r\nX:	ignore
 ```
 You can use `\r\n` sequences to split a pseudo-header (like the line above), or to split a whole request. Make sure tho, when doing this, that both requests contain all needed headers. Account for request rewriting done by the server. So if the front-end adds a Host header at the end of all header, you must make sure that you add an extra Host header before splitting the request with `\r\n\r\n`.
 
+Also try the `\r\n` in the special HTTP/2 headers like `:path` or all of those. Sometimes it works :)
+
 ### Inconsistencies | Pseudo-Headers
 Sending a `Host` header will sometimes result in two host headers in the back-end, since in HTTP/2 you got the `:authority` pseudo-header which effectively replaces the normal host header.
 
@@ -136,14 +138,34 @@ Content-Length: 10
 x=x
 ```
 
-## Request Tunneling
+# Request Tunneling
 When the connection between the front- and back-end is not reused for multiple requests, you cannot really do request smuggling. So for when you cannot interfere with other users requests, there is request tunneling! In HTTP/2 every "stream" should only contain a single request and response. If you receive a response with another response in the body, you have succesfully tunneled a request.
 
 Use [sequences like this](#prohibited-injection-sequences--pseudo-headers) to break out of HTTP/2 header names or values. To leak the internal headers, inject a `Content-Length: 99\r\n\r\nfoo=` where foo reflects in the response. 
 
 Some front-end servers will read all data received from the back-end, and so forward also the tunneled response within the body of the main response to the client. Other servers only read the content-length amount, so you don't get any visible response, thus it is **blind request tunneling**. Luckily, sometimes front-end servers try to read content-length amount of bytes even when the request method was `HEAD` (the response contains a content-length header with the size of the response as if it was a normal request). When the server has this misconfiguration, you can simply get the tunneled response (as plain body) by using `HEAD` in the main request.
-- If the tunneled response is shorter than the main response, just tunnel another request after it to "pad"
+- If the tunneled response is shorter than the main response, just tunnel another request after it for padding
 - If the tunneled response is longer than the main response, create a main request that reflects input. This way you can make the response arbitrarily long
 
 Take a look at this proof of concept
 ![Proof of concept](../images/Unblind_request_tunneling.png)
+
+### Another Cool Proof of Concept
+
+This is the payload in the value field of the HTTP/2 `:path` header:
+```
+/ HTTP/1.1\r\n
+Host: vulnerable-website.com\r\n
+\r\n
+GET /resources?<script>alert(1)</script> HTTP/1.1\r\n
+Host: vulnerable-website.com\r\n
+\r\n
+GET / HTTP/1.1\r\n
+Host: vulnerable-website.com\r\n
+X: X
+```
+The `HEAD` method is used, and the front-end server just reads the amount of bytes in the content-length header.
+- The first part of request is to make the main request valid
+- The first tunneled request is malicious, since it redirects to `/resources/?<script>alert(1)</script>` without encoding
+- The second tunneled request is for the extra padding, so there are enough bytes for the front-end to read
+If the cache doesn't separate between `HEAD` and `GET` methods, any normal request will receive the poisened response saved by the cache.
