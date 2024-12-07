@@ -8,6 +8,7 @@ When you smuggle an extra full request, it can cause the server's response queue
 Many applications perform on-site redirects from one URL to another and place the hostname from the request's Host header into the redirect URL. An example of this is the default behavior of Apache and IIS web servers, where a request for a folder without a trailing slash receives a redirect to the same folder including the trailing slash. This behavior is normally considered harmless, but it can be exploited in a request smuggling attack to redirect other users to an external domain. Example [PoC](#h2cl--on-site-redirect)
 
 # HTTP/1.1
+### CL.TE & TE.CL
 Requests first go through a load balancer/reverse proxy/front end, and then get sent to a back end server. If there are inconsistencies between the calculation of the length of the requests, it allows for HTTP request smuggling.
 
 ![Request smuggling schematic](../images/Request_smuggling.png)
@@ -21,6 +22,11 @@ With `Transfer-Encoding: chunked`, each chunk of data looks like this:
 The message is terminated with a chunk of size zero, so something like this `0\r\n\r\n`.
 
 > HTTP/2 is kinda immune to ambigious request length
+
+### CL.0 & H2.0
+Sometimes, endpoint that don't expect to receive `POST` requests will just ignore the `Content-Length` header. This allows to smuggle request by simply sending the start of a new request in the main request body. Look at [this PoC](#cl0--simple).
+
+The same thing might happen with HTTP/2 downgrading. The back-end might ignore the content-length header. We call this **H2.0** :water: **vulnerability**.
 
 ## Exploitation
 
@@ -84,6 +90,17 @@ Content-Type: application/x-www-form-urlencoded
 Content-Length: 100
 
 email=
+```
+
+### CL.0 | Simple
+The next request sent over the same connection will receive the response of the smuggled request.
+```
+POST /resources/expectingGET.jpg HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 27
+
+GET /admin HTTP/1.1
+Foo: x
 ```
 
 # HTTP/2
