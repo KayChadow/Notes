@@ -36,7 +36,7 @@ Sometimes when you pause in the middle of the request, the front-end and back-en
 - The frond-end server must not (or can be encouraged not to) time out requests before the back-end server.
 - The back-end server must leave the connection open for reuse following a read timeout.
 
-Use Burp Turbo Intruder for this, because you can easily pause attacks, and continue. Take a look [here](../burp/turbo_intruder.md#pause-based-desync-attack) for an in depth explanation on how to use Turbo Intruder for this, with a step by step example.
+Use Burp Turbo Intruder for this, because you can easily pause attacks, and continue. Take a look [here](../burp/turbo_intruder.md#pause-based-desync-attack) for an in depth explanation on how to use Turbo Intruder for this, with a step by step example. Apache 2.4.52 (kinda old) is vulnerable to this type of attack.
 
 ## Exploitation
 
@@ -212,3 +212,9 @@ The `HEAD` method is used, and the front-end server just reads the amount of byt
 - The first tunneled request is malicious, since it redirects to `/resources/?<script>alert(1)</script>` without encoding
 - The second tunneled request is for the extra padding, so there are enough bytes for the front-end to read
 If the cache doesn't separate between `HEAD` and `GET` methods, any normal request will receive the poisened response saved by the cache.
+
+# Sources
+- Main info (Portswigger): https://portswigger.net/web-security/request-smuggling 
+- Article on desync (Portswigger): https://portswigger.net/research/http-desync-attacks-request-smuggling-reborn
+- Article on HTTP/2 (Portswigger): https://portswigger.net/research/http2
+- Article on client-side desync and cool stuff: https://portswigger.net/research/browser-powered-desync-attacks 

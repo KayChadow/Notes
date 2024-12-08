@@ -83,7 +83,6 @@ Sometimes, a pause withing the sending of the request can cause a desync attack 
 POST /example HTTP/1.1
 Host: vulnerable-website.com
 Connection: keep-alive
-Content-Type: application/x-www-form-urlencoded
 Content-Length: 34
 
 GET /hopefully404 HTTP/1.1
