@@ -1,6 +1,8 @@
 # Turbo Intruder
 The BurpSuite extension to be able to do more intruder stuff.
 
+- Use `%s` in the target request to mark payload positions.
+
 It uses python. And the user can define the algorithm of two functions.
 ```python
 def queueRequests(target, wordlists):
