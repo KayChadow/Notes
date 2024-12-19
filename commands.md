@@ -48,6 +48,10 @@ echo -e -n
 - e to allow `\` escapes
 - n to not print trailing newline
 ```sh
+evil-winrm
+```
+- Evil pentest version of Window remote management tool that uses WS-Management protocol.
+```sh
 exiftool
 ```
 - Get file info and metadata
@@ -74,6 +78,11 @@ find
 free
 ```
 - Display amount of free memory
+```sh
+ftp
+```
+- FTP connection on port 20,21
+- SFTP is secure version
 ## G
 ```sh
 gdb
@@ -86,6 +95,11 @@ git
 ```
 - GOATED
 - Pull -> add -> commit -> push
+```sh
+gobuster
+```
+- Brute force for directories on web server for example
+- gobuster dir -u <url\> -w </usr/share/wordlists/w.txt\>
 ```sh
 grep -E
 ```
@@ -111,6 +125,11 @@ hexedit
 id
 ```
 - View current UID and GID, and other related ID's or groups
+## J
+```sh
+john -w=/usr/share/wordlists/rockyou.txt <passhashfile>
+```
+- John the ripper, brute force hashes for example
 ## K
 ```sh
 kill
@@ -150,6 +169,12 @@ mktemp
 more
 ```
 - Display file in terminal
+```sh
+mysql -h <host> -P <port> -u <user>
+```
+- Connect to some mysql version server
+- mysql -h <host\> -P <port\> -u <user\>
+- When in, do `show databases` and `show tables`
 ## N
 ```sh
 nc (host) (port)
@@ -186,6 +211,10 @@ ps
 - Process status: display running processes in current shell
 ## R
 ```sh
+redis-cli
+```
+- Connect to redis database on port 6379
+```sh
 rot13
 ```
 - Alias of: `tr 'A-Za-z' 'N-ZA-Mn-za-m'`
@@ -199,6 +228,10 @@ sed -i “(line num (range) optional) s/findstr/replacestr/(g for all occurrence
 sha256sum
 ```
 - Get the sha256 checksum to check the hash
+```sh
+smbclient
+```
+- SMB connect on port 445
 ```sh
 stat
 ```
@@ -225,6 +258,10 @@ sudo
 tar -xvf (file)
 ```
 - Unpack a .tar file
+```sh
+telnet
+```
+- Telnet connection for simple communication, port 23
 ```sh
 top
 ```
