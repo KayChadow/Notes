@@ -70,7 +70,7 @@ feh
 ```
 - Image viewer
 ```sh
-find
+find . (options)
 ```
 - Find files 
 - Use -name or -size …(c) to specify
@@ -125,6 +125,11 @@ hexedit
 id
 ```
 - View current UID and GID, and other related ID's or groups
+```sh
+impacket-<package>
+```
+- Collection of python3 classes focused on providing access to network packets
+- Use the package `mssqlclient <user>:<pass>@<host> -windows-auth` to connect to Microsoft database with credentials
 ## J
 ```sh
 john -w=/usr/share/wordlists/rockyou.txt <passhashfile>
@@ -177,12 +182,20 @@ mysql -h <host> -P <port> -u <user>
 - When in, do `show databases` and `show tables`
 ## N
 ```sh
-nc (host) (port)
+nc <host> <port>
 ```
 - TCP (or UDP) connection with host
 - Pipe a file into it as input
 - For payload input use `echo -e "$(<my_payload.txt)" | nc host port`
 - Can be used to connect to a bindshell (shell in post hack)
+```sh
+nmap <ip>
+```
+- Network scanning and enumeration
+- Use `-sV` for service version
+- Use `-A` to enable some script scan
+- Use `-v` for verbose output
+- Use `-p` to clarify ports or "-" for all
 ## O
 ```sh
 objcopy -I binary -O binary --reverse-bytes=n inputfile.bin outputfile.bin
@@ -229,9 +242,10 @@ sha256sum
 ```
 - Get the sha256 checksum to check the hash
 ```sh
-smbclient
+smbclient 
 ```
 - SMB connect on port 445
+- Do `//<server>/<share>` to connect to a share
 ```sh
 stat
 ```

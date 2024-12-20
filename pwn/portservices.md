@@ -28,6 +28,9 @@ HyperText Transfer Protocol Secure
 Server Message Block
 - Microsoft file sharing
 
+### 1433 - MSSQL
+Microsoft SQL Server database management system server
+
 ### 5985 - WinRM
 Windows Remote Management Service, Windows Powershell
 - Use evil-winrm in terminal
