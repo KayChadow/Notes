@@ -2,6 +2,15 @@
 
 Some useful commands when working with the linux terminal, and when doing CTF or hacking.
 
+### File descriptors
+It is necessarily to know how file descriptors work, if you want to master the linux terminal.
+
+0. stdin
+1. stdout
+2. stderr
+
+Explanation of file descriptors, duplicating with `>&`, `<&`, `<>`: https://www.gnu.org/software/bash/manual/bash.html#Duplicating-File-Descriptors 
+
 ---
 ```sh
 $0
@@ -188,6 +197,8 @@ nc <host> <port>
 - Pipe a file into it as input
 - For payload input use `echo -e "$(<my_payload.txt)" | nc host port`
 - Can be used to connect to a bindshell (shell in post hack)
+- Use `nc -nvlp <port>` to let terminal work like a server
+
 ```sh
 nmap <ip>
 ```
@@ -222,6 +233,11 @@ pngcheck
 ps
 ```
 - Process status: display running processes in current shell
+```sh
+python3
+```
+- Open python3 shell
+- Use `python3 -m http.server <port>` to open server to serve files from this directory over port
 ## R
 ```sh
 redis-cli
