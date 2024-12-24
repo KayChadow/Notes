@@ -21,6 +21,10 @@ Teletype Network
 ### 80 - HTTP
 HyperText Transfer Protocol
 
+### 389 - LDAP
+Lightweight Directory Access Protocol
+- Used by Java Naming and Directory Interface API (JNDI)
+
 ### 443 - HTTPS
 HyperText Transfer Protocol Secure
 

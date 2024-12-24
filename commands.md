@@ -186,9 +186,17 @@ mktemp
 - Make temp file in /tmp/
 - Use `-d` for temp directory
 ```sh
+mongo
+```
+- Connect and use MongoDB database
+```sh
 more
 ```
 - Display file in terminal
+```sh
+mvn
+```
+- Maven, Java stuff
 ```sh
 mysql -h <host> -P <port> -u <user>
 ```
@@ -256,6 +264,11 @@ rot13
 - Added this alias myself, to do rot13 decrypt/encrypt in terminal easily
 ## S
 ```sh
+script <file>
+```
+- Run typescript file or stuff
+- Do `script /dev/null -c bash` to get a more stable shell
+```sh
 sed -i “(line num (range) optional) s/findstr/replacestr/(g for all occurrences)” file.smth
 ```
 - To find and replace and write to the file without need of any text editor programs
@@ -300,6 +313,11 @@ sqlmap -u <url>
 tar -xvf (file)
 ```
 - Unpack a .tar file
+```sh
+tcpdump
+```
+- Kinda like wireshark, display packets being send/received over network
+- Specify network with `-i tun0 port 22`
 ```sh
 telnet
 ```
