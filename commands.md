@@ -27,6 +27,11 @@ alias sayhi="echo hi"
 - Create shortcuts for (complex) commands
 ## B
 ```sh
+base64
+```
+- Encode and decode base64
+- Pipe `| base64 -d` to decode previous command output
+```sh
 bash
 ```
 - Simple but better shell than `sh`, commonly used
