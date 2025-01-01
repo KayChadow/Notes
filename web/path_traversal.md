@@ -18,3 +18,5 @@ Some filters strip path traversal sequences from the user input. Or it checks if
 > - URL encode the characters (twice), you end up with `%2e%2e%2f`, or `%252e%252e%252f`
 > - Might be possible to terminate the file path with `%00` before the requered extension
 
+# Sources
+- Main info (Portswigger): https://portswigger.net/web-security/learning-paths/path-traversal

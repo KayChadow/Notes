@@ -174,3 +174,6 @@ function handleResponse() {
 };
 </script>
 ```
+
+# Sources
+- Main info (Portswigger): https://portswigger.net/web-security/cross-site-scripting

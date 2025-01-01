@@ -41,3 +41,6 @@ Sometimes, the filter looks at a host match at the beginning, at the end, or som
 When the application issues a back-end request, but no response is returned to the front-end application.
 
 You can use Out-of-band Application Security Testing (OAST) to try to trigger a request to a system that you control. You can blindly sweep internal IP addresses, and send payloads that also use OAST techniques. Or return malicious HTTP responses to the target server.
+
+# Sources
+- Main info (Portswigger): https://portswigger.net/web-security/learning-paths/ssrf-attacks

@@ -42,3 +42,6 @@ If server trusts another server, but the second server is vulnerable to [xss](./
     /* javascript here */
 </script>"></iframe>
 ```
+
+# Sources
+- Main info (Portswigger): https://portswigger.net/web-security/learning-paths/cors

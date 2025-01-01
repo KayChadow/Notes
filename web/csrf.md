@@ -142,3 +142,6 @@ fetch('/post/comment', {
 });
 </script>
 ```
+
+# Sources
+- Main info (Portswigger): https://portswigger.net/web-security/learning-paths/csrf

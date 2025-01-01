@@ -40,3 +40,6 @@ Try inputting characters like `#`, `&`, `=`, [path traversal](./path_traversal.m
 Try adding extra parameters with some values to input used in XML or JSON. Use correct format for XML/JSON, also try escaping the qoutes `\"`.
 
 You can also use the [Backslash Powered Scanner BApp](https://portswigger.net/bappstore/9cff8c55432a45808432e26dbb2b41d8) to identify server-side injection vulnerabilities.
+
+# Sources
+- Main info (Portswigger): https://portswigger.net/web-security/learning-paths/api-testing

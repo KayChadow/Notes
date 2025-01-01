@@ -102,3 +102,6 @@ This for Linux systems using the GNOME desktop environment that often have a [DT
 %local_dtd;
 ]>
 ```
+
+# Sources
+- Main info (Portswigger): https://portswigger.net/web-security/xxe

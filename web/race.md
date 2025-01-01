@@ -67,3 +67,6 @@ Different endpoints inherently vary in their processing times, sometimes signifi
 > If connection warming doesn't work. You can try splitting the attack requests in multiple TCP packets with a delay, but on high-jitter targets, this probably won't work
 > So, webservers often delay the processing of requests if too many are sent too quickly.
 > - So try sending a large number of dummy requests to trigger the resource limit, this might cause a nice server-side delay. This is a viable single-packet attack strategy with delayed execution
+
+# Sources
+- Main info (Portswigger): https://portswigger.net/web-security/learning-paths/race-conditions

