@@ -15,10 +15,10 @@ Steps to search for client-side prototype pollution sources.
 3. Try using different techniques, or different notation. For example `vulnerable-website.com/?__proto__.foo=bar`.
 4. Repeat this for every potential source.
 
-Just use DOM Invader, which is preinstalled in Burps browser. It automatically tests for prototype pollution soources when you browse.
+Just use [DOM Invader](../burp/dom_invader.md), which is preinstalled in Burps browser. It automatically tests for prototype pollution soources when you browse.
 
 ### Gadget
-> I was going to write a step by step instruction on how to find prototype pollution gadgets here. But then I saw that DOM Invader can also do this automatically. This saves a lot of time. If you still want to read how to do it manually, this is the [link](https://portswigger.net/web-security/learning-paths/prototype-pollution/client-side-prototype-pollution/prototype-pollution/client-side/finding-client-side-prototype-pollution-gadgets-manually).
+> I was going to write a step by step instruction on how to find prototype pollution gadgets here. But then I saw that [DOM Invader](../burp/dom_invader.md) can also do this automatically. This saves a lot of time. If you still want to read how to do it manually, this is the [link](https://portswigger.net/web-security/learning-paths/prototype-pollution/client-side-prototype-pollution/prototype-pollution/client-side/finding-client-side-prototype-pollution-gadgets-manually).
 
 ### Sink
 
