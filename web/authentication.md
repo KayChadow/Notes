@@ -22,6 +22,10 @@ You can try brute-forcing a password. But first you need a valid username. That 
     - Find valid usernames through diffence in response
 - Credential stuffing
     - Try a bunch compromised username:password pairs (from data breaches)
+- Also try to brute force password reset pages
+    - These also form an attack surface. Try all kinds of password related pages
+- Brute force login cookie
+    - Sometimes the cookie is kinda predictable
 
 ### Defense
 - IP blocking
@@ -42,3 +46,6 @@ Only real 2FA if it is two **different** factors, not two times the same factor.
 - Bypass if badly implemented MFA
     - If the user is first prompted to enter a password, and then prompted to enter a verification code on a separate page, the user is effectively in a "logged in" state before they have entered the verification code.
     - Go to verify page, change the username cookie to another username. And try brute forcing the verification code.
+
+# Source
+- Main info (Portswigger): https://portswigger.net/web-security/learning-paths/authentication-vulnerabilities
