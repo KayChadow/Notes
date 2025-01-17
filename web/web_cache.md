@@ -55,3 +55,17 @@ You can also try it in reverse with static files like `/index.html` using a payl
 
 # Web Cache Poisoning
 Web cache poisoning manipulates cache keys to inject malicious content into a cached response, which is then served to other users.
+
+Web cache poisoning involves three steps:
+- Identify and evaluate unkeyed inputs
+- Elicit a harmful response from the back-end server
+- Get the response cached
+
+### Identify and Evaluate Unkeyed Inputs
+You can try adding headers, query strings, or other things. To try and make the server return a different response. Luckily, there exists [Param Miner](../burp/param_miner.md). This extension can "guess headers" automatically for you, and it lists them if there is a difference in response.
+
+## Exploiting Cache Flaws
+When you found an unkeyed input, you can try and use it to get a harmful response. For example, when the `X-Forwarded-Host` header is used to generate urls/links/src on the page, you can maybe try [xss](./xss.md) or injecting your malicious domain into it. Even cookies are sometimes not used in the cache key! But cookie bugs get fixed quite fast most of the time.
+
+### Multiple Headers Together
+Maybe try `X-Forwarded-Proto` together with `X-Forwarded-Host`? And sometimes the server will automatically redirect if the protocol is not HTTPS. And maybe, it will dynamically generate the redirect url from the request host.. Soooo yeahhh.
