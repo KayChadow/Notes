@@ -17,6 +17,8 @@ The cache must decide if there is a cached response that it can serve directly, 
 
 When testing for web cache vulnerabilities, you generally don't want to receive cached responses. That is why you should use a dynamic cachebuster. This is already implemented in the [Param Miner Extension](../burp/param_miner.md#dynamic-cachebuster). This makes your life way easier.
 
+You can use the `Vary` request header to add certain headers to the cache key. This can be used to add the `Vary: User-Agent` header to target specific users.
+
 ### Cache Rules
 Cache rules determine what can be cached and for how long. These are some type of rules that can be enforced:
 - Static file extension rules: Cache `.css`, `.exe` or `.js` for example.
@@ -65,7 +67,87 @@ Web cache poisoning involves three steps:
 You can try adding headers, query strings, or other things. To try and make the server return a different response. Luckily, there exists [Param Miner](../burp/param_miner.md). This extension can "guess headers" automatically for you, and it lists them if there is a difference in response.
 
 ## Exploiting Cache Flaws
-When you found an unkeyed input, you can try and use it to get a harmful response. For example, when the `X-Forwarded-Host` header is used to generate urls/links/src on the page, you can maybe try [xss](./xss.md) or injecting your malicious domain into it. Even cookies are sometimes not used in the cache key! But cookie bugs get fixed quite fast most of the time.
+> DoS : Denial of Service\
+> XSS : Cross-Site Scripting\
+> AUR : Arbitrary URL Redirect
 
-### Multiple Headers Together
-Maybe try `X-Forwarded-Proto` together with `X-Forwarded-Host`? And sometimes the server will automatically redirect if the protocol is not HTTPS. And maybe, it will dynamically generate the redirect url from the request host.. Soooo yeahhh.
+### Internal Route Header Attack
+>DoS ; ;
+
+CDN's implement some special headers to pass routing information during internal transmission. You can exploit these headers to trigger a an exception by the CDN, leading to WCP. These are some of the headers: `Fastly-Client-Ip`, `Fastly-Soc-X-Request-Id`, `X-Amz-WebsiteRedirect-Location`, `X-Amzn-CDN-Cache`.
+
+### Identify Header Attack
+>DoS ; ;
+
+When gateway systems support HTTP authentication, you can inject illegal header values to make the server return an denial of access response. And then the cache incorrectly stores it. Headers used for this attack are: `Authorization`, `X-Auth-User`, `Auth-Key`.
+
+### Protocol Header Attack
+>DoS ; AUR ;
+
+Headers like `X-Forwarded-SSL`, `X-Forwarded-Scheme`, `X-Forwarded-Proto`, `X-Forwarded-Protocol` are used to identify client connection protocols. But some web servers respond with a 301 redirect if the protocol is not cool enough. If the redirect retains the headers, it causes a DoS attack. In the scenario that the redirect is cached, you can try using `X-Forwarded-Host` to control the redirect URL.
+
+### HTTP Range Header Attack
+>DoS ; ;
+
+The [`Range`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Range) header is used to specify a portion of a resource, for tasks like multi-threaded downloads. When the server doesn't support this, or a malformed value is injected, it might cause errors.
+
+### HTTP If Header Attack
+>DoS ; ;
+
+HTTP standard headers like `If-Match`, `If-Range`, `If-Modified-since` determine if a web server meets specified conditions. However, some web servers generate 4xx or 5xx errors when processing these requests. If this is then cached, kab00m! WCP.
+
+### HTTP Upgrade Header Attack
+>DoS ; ;
+
+The `Upgrade` header allows upgrading a connection. But when upgrading it to an unsupported protocol: `Upgrade: HTTP/3.0`. Or to a malformed one: `Upgrade: HTTP/0.9`. Web servers might return incorrect status codes, that potentially get cached.
+
+### HTTP Coding Header Attack
+>DoS ; ;
+
+Headers like `Accept`, `Accept-Encoding`, `Transfer-Encoding` are used to identify encoding formats. If these are malformed or illegal, it might cause exceptions at the web server.
+
+### HTTP Header Oversize Attack
+>DoS ; ;
+
+The HTTP protocol standard does not impose a limit on the length of the request header. Therefore, different servers might set restrictions themselves. If you send a request with a length bigger than the web server, and smaller than the cache server. The web server will return an error, which will get cached by the cache server.
+
+### HTTP Method Override Attack
+>DoS ; ;
+
+Some web frameworks support helper headers like `X-HTTP-Method-Override`. So when you send a GET request overridden with DELETE, and the web server doesn't support DELETE, it will generate an error. While the cache will save it since it saw it as a GET request.
+
+### HTTP Meta Character Attack
+>DoS ; ;
+
+Metacharacters sometimes trigger error pages when the web server processes the request. These metacharacters involve all control characters, including `\r`, `\n`, or any other. 
+
+### Fat GET Attack
+> ; XSS ;
+
+Cache servers usually cache a GET request, and exclude the body of a GET request from a cache key. Despite the HTTP standard of prohibiting GET requests from having a body, some web applications parse fat GET request bodies, allowing dynamic responses. You can even try combining it with `X-HTTP-Method-Override` header.
+
+### HTTP Parameter Attack
+> ; XSS ;
+
+When you found an unkeyed input, you can try and use it to get a harmful response. For example, when the `X-Forwarded-Host` header is used to dynamically generate urls/links/src on the page, you can maybe try [xss](./xss.md) or injecting your malicious domain into it. Even cookies are sometimes not used in the cache key! But cookie bugs get fixed quite fast most of the time, since they are triggered without intent.
+
+### HTTP Forwarded Header Attack
+>DoS ; XSS ; AUR
+
+Reverse proxies rely on routing host information to determine the web server for fetching web resources. Commonly, header like `Host`, `X-Forwarded-Host`, `X-Forwarded-Port`, `Forwarded` are used to identify original routing host. This can be exploited to let the cache server read malicious data, or to let the web server reject responses. As these headers are not part of the cache key.
+
+### Blacklist Attack
+>DoS ; ;
+
+Inconsistencies in the blacklist support between the cache and the web server. This might cause the web server to throw an error, while the cache might just cache it. This can be done by adding random payloads like `<script>alert(1)</script>` in certain headers, or adding a `Referer` header with a phishing site domain name. Or `User-Agent` values with web crawlers or anything, be creative with it. 
+
+
+
+
+
+
+
+# Sources
+- Main info (Portswigger): https://portswigger.net/web-security/web-cache-poisoning
+- Internet's Invisible Enemy: Detecting and Measuring Web Cache Poisoning in the Wild: https://www.jianjunchen.com/p/web-cache-posioning.CCS24.pdf
+- HCache (tool): https://github.com/phantomnothingness/HCache/tree/main
