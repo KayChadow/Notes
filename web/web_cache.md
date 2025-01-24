@@ -13,7 +13,7 @@ When a request for the same static resource is made in the future, the cache ser
 ![Schematic web cache](../images/Web_cache.png)
 
 ### Cache Keys
-The cache must decide if there is a cached response that it can serve directly, or if it has to forward the request. The cache does this by generating a `cache key` from elements of the HTTP request. This typically includes the URL path, query parameters, and some important headers. If the cache key is equivalent, it serves the cached response.
+The cache must decide if there is a cached response that it can serve directly, or if it has to forward the request. The cache does this by generating a `cache key` from elements of the HTTP request. This typically includes the URL path, query parameters, and some important headers. If the cache key is equivalent, it serves the cached response. You can try to get the cache key in the response with headers like `Pragma: x-get-cache-key` or something, but is probably not allowed by server.
 
 When testing for web cache vulnerabilities, you generally don't want to receive cached responses. That is why you should use a dynamic cachebuster. This is already implemented in the [Param Miner Extension](../burp/param_miner.md#dynamic-cachebuster). This makes your life way easier.
 
